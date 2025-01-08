@@ -15,7 +15,6 @@ const FacebookLoginComponent: React.FC<FacebookLoginProps> = ({ onLogin, onError
         scope="public_profile,email,pages_read_engagement,pages_show_list"
         onError={onError}
         onSuccess={onLogin}
-        className="facebook-login-button"
       >
         Login with Facebook
       </LoginButton>

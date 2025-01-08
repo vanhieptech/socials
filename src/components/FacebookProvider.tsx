@@ -7,7 +7,7 @@ interface FacebookProviderProps {
 
 const FacebookProvider: React.FC<FacebookProviderProps> = ({ children }) => {
   return (
-    <ReactFacebookProvider appId={FACEBOOK_APP_ID}>
+    <ReactFacebookProvider appId='439295392463311'>
       {children}
     </ReactFacebookProvider>
   );

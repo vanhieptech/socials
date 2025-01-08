@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useFacebook } from 'react-facebook';
 import styled from 'styled-components';
+import { SecureFacebookClient } from '@/lib/facebook-client';
 
 interface CommentPickerProps {
   userData: any;
+}
+
+interface FacebookApiResponse {
+  data: any[];
 }
 
 const CommentPicker: React.FC<CommentPickerProps> = ({ userData }) => {
@@ -12,16 +17,36 @@ const CommentPicker: React.FC<CommentPickerProps> = ({ userData }) => {
   const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { api } = useFacebook();
+  const fbClient = SecureFacebookClient.getInstance();
 
   useEffect(() => {
     fetchUserPosts();
   }, []);
 
+  const secureApiCall = async (endpoint: string, params: any) => {
+    try {
+      const token = await fbClient.getSecureToken(userData.id);
+      if (!token) {
+        throw new Error('No valid token found');
+      }
+
+      const response = await api?.api(endpoint, {
+        ...params,
+        access_token: token
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Secure API call failed:', error);
+      throw error;
+    }
+  };
+
   const fetchUserPosts = async () => {
     try {
-      const response = await api.api('/me/posts', {
+      const response = await secureApiCall('/me/posts', {
         fields: 'id,message,created_time',
-      });
+      }) as FacebookApiResponse;
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -31,9 +56,9 @@ const CommentPicker: React.FC<CommentPickerProps> = ({ userData }) => {
   const fetchComments = async (postId: string) => {
     setLoading(true);
     try {
-      const response = await api.api(`/${postId}/comments`, {
+      const response = await api?.api(`/${postId}/comments`, {
         fields: 'id,message,from',
-      });
+      } as any) as FacebookApiResponse;
       setComments(response.data);
     } catch (error) {
       console.error('Error fetching comments:', error);

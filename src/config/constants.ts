@@ -1,4 +1,4 @@
-export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '';
+export const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '';
 
 export const FACEBOOK_PERMISSIONS = [
   '`public_profile`',
